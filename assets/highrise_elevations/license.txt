@@ -1,0 +1,11 @@
+Model Information:
+* title:	Highrise Elevations
+* source:	https://sketchfab.com/3d-models/highrise-elevations-732360bfd7394366a0f6d0f79d0dba7d
+* author:	VertaScan (https://sketchfab.com/VertaScan)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Highrise Elevations" (https://sketchfab.com/3d-models/highrise-elevations-732360bfd7394366a0f6d0f79d0dba7d) by VertaScan (https://sketchfab.com/VertaScan) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
