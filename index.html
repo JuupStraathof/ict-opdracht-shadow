@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>CVA Revalidatie Keuken</title>
+    <!-- IMPORTS -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/super-hands/dist/super-hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.1.0/dist/aframe-physics-system.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
+    <!-- END | IMPORTS -->
+  </head>
+  <body>
+    <a-scene physics="debug:  true" environment="">
+      <a-assets>
+        <a-asset-item
+          id="highrise_model"
+          src="assets/highrise_elevations/scene.gltf"
+        ></a-asset-item>
+      </a-assets>
+      <a-entity
+        gltf-model="#highrise_model"
+        position="0 0 0"
+        scale="0.1 0.1 0.1"
+      ></a-entity>
+    </a-scene>
+  </body>
+</html>
