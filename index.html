@@ -52,16 +52,8 @@
       </a-assets>
       <!-- END | ASSETS -->
       <!-- CAMERA RIG -->
-      <a-entity id="camera_entity" rig position="0 10.648 0">
-        <a-camera positon="0 0 0">
-          <a-cursor
-            id="sight_cursor"
-            raycaster="showLine: true"
-            position="0 0 -0.2"
-            visible="true"
-            collisionForces="false"
-          ></a-cursor>
-        </a-camera>
+      <a-entity id="camera_entity" rig position="0 1.6 0">
+        <a-camera positon="0 0 0"> </a-camera>
         <a-entity id="rhand" mixin="touch" hand-controls="hand: right">
         </a-entity>
         <a-entity id="lhand" mixin="touch" hand-controls="hand: left">
@@ -79,12 +71,17 @@
         gltf-model="#highrise_model"
         position="0 0 0"
         rotation="0 90 0"
-        scale="0.1 0.1 0.1"
+        scale="1 1 1"
       ></a-entity>
 
-    <a-plane src="/assets/Images/GroundPlanePicture.png" rotation=" -90 0 0" height="50" width="50" position="0 1 0">
-      
-    </a-plane>
+      <a-plane
+        src="/assets/Images/GroundPlanePicture.png"
+        rotation=" -90 0 0"
+        height="50"
+        width="50"
+        position="0 1 0"
+      >
+      </a-plane>
     </a-scene>
   </body>
 </html>
