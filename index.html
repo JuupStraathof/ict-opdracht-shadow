@@ -8,6 +8,39 @@
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
+    <script>
+      AFRAME.registerComponent('joystick-movement', {
+        init: function () {
+          this.el.addEventListener('thumbstickmoved', (evt) => {
+            let rig = this.el; // Camera rig entity
+            let direction = new THREE.Vector3();
+    
+            // Get forward direction from the camera
+            rig.object3D.getWorldDirection(direction);
+            direction.y = 0; // Ensure movement is only horizontal (no flying)
+    
+            if (evt.detail.y < -0.2) {
+              // Move forward
+              rig.object3D.position.addScaledVector(direction, 0.1);
+            }
+            if (evt.detail.y > 0.2) {
+              // Move backward
+              rig.object3D.position.addScaledVector(direction, -0.1);
+            }
+            if (evt.detail.x < -0.2) {
+              // Move left (strafe)
+              let left = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
+              rig.object3D.position.addScaledVector(left, 0.1);
+            }
+            if (evt.detail.x > 0.2) {
+              // Move right (strafe)
+              let right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize();
+              rig.object3D.position.addScaledVector(right, 0.1);
+            }
+          });
+        }
+      });
+    </script>
     <!-- END | IMPORTS -->
     <!-- SCRIPTS -->
     <script>
@@ -36,46 +69,21 @@
           src="assets/highrise_elevations/scene.gltf"
         ></a-asset-item>
         <!-- MIXINS -->
-            <a-mixin
-              id="touch"
-              physics-collider
-              phase-shift
-              collision-filter="collisionForces: false"
-              static-body="shape: sphere; sphereRadius: 0.02"
-              super-hands="colliderEvent: collisions;
-                           colliderEventProperty: els;
-                           colliderEndEvent: collisions;
-                           colliderEndEventProperty: clearedEls;">
-            </a-mixin>
-          </a-assets>
-        
-          <a-mixin
-        id="touch"
-        physics-collider
-        phase-shift
-        collision-filter="collisionForces: false"
-        static-body="shape: sphere; sphereRadius: 0.02"
-        super-hands="colliderEvent: collisions;
-                     colliderEventProperty: els;
-                     colliderEndEvent: collisions;
-                     colliderEndEventProperty: clearedEls;">
-      </a-mixin>
-    </a-assets>
-
-    <!-- CAMERA RIG (MOVEMENT CONTROLS) -->
-    <a-entity id="camera_entity"
-              movement-controls="constrainToNavMesh: false"
-              wasd-controls
-              position="0 1.6 0">
-      <!-- Main Camera -->
-      <a-camera position="0 0 0"></a-camera>
-
-      <!-- Right Hand Controller (Thumbstick for movement) -->
-      <a-entity id="rhand" mixin="touch"
-                hand-controls="hand: right"
-                oculus-touch-controls="hand: right"
-                thumbstick-controls="fly: false">
-      </a-entity>
+        <a-mixin
+          id="touch"
+          physics-collider
+          phase-shift
+          collision-filter="collisionForces: false"
+          static-body="shape: sphere; sphereRadius: 0.02"
+          super-hands="colliderEvent: collisions;
+                            colliderEventProperty: els;
+                            colliderEndEvent: collisions;
+                            colliderEndEventProperty: clearedEls;"
+        >
+        </a-mixin>
+        <!-- END | MIXINS -->
+      </a-assets>
+      <!-- END | ASSETS -->
 
       <!-- Left Hand Controller -->
       <a-entity id="lhand" mixin="touch"
@@ -91,22 +99,199 @@
 
       <!-- HIGHRISE ENTITY -->
       <a-entity
+        id="highrise_model"
         gltf-model="#highrise_model"
         position="0 0 0"
         rotation="0 90 0"
-        scale="1"
+        scale="0.5 0.5 0.5"
       >
-    
-      <a-box src="/assets/Images/plank.jpg" height="20" width="1" depth="0.5" rotation="-90 90 0 " position="81 119.8 3.217"></a-box>
-      <a-box src="/assets/Images/plank.jpg" height="10" width="1" depth="0.5" rotation=" -90 -90 -90 " position="71.48 119.8 -2.242"></a-box>
-      <a-box src="/assets/Images/plank.jpg" height="7" width="1" depth="0.5" rotation="-90 90 0 " position="67.50 119.8 -6.661"></a-box>
-    </a-entity>
+        <!-- CAMERA & HANDS ENTITY  -->
+        <a-entity
+          id="camera_rig_entity"
+          rig
+          position="8.5 121 -9"
+          rotation="0 -90 0"
+          joystick-movement
+        >
+          <a-camera id="camera" positon="0 0 0" > </a-camera>
+          <a-entity id="rhand" mixin="touch" hand-controls="hand: right">
+          </a-entity>
+          <a-entity id="lhand" mixin="touch" hand-controls="hand: left">
+          </a-entity>
+        </a-entity>
+        <!-- END | CAMERA & HANDS ENTITY  -->
+        <!-- PLANKS -->
+        <a-box
+          src="/assets/Images/plank.jpg"
+          height="20"
+          width="1"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="81 119.8 3.217"
+          static-body
+        ></a-box>
+        <a-box
+          src="/assets/Images/plank.jpg"
+          height="10"
+          width="1"
+          depth="0.5"
+          rotation=" -90 -90 -90 "
+          position="71.48 119.8 -2.242"
+          static-body
+        ></a-box>
+        <a-box
+          src="/assets/Images/plank.jpg"
+          height="7"
+          width="1"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="67.50 119.8 -6.661"
+        ></a-box>
+        <a-box
+          src="/assets/Images/plank.jpg"
+          height="42"
+          width="3"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="30 119.8 -7.2"
+          static-body
+        ></a-box>
+        <!-- END PLANKS -->
 
-    <!-- ground plane-->
-<a-plane src="/assets/Images/GroundPlanePicture.png" rotation=" -90 0 0" height="50" width="50" position="0 1 0">
-    
-      
-    </a-plane>
+        <!-- Pushable boxes first layer-->
+        <a-box
+          src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+          height="0.5"
+          width="0.5"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="15 121 -6.5"
+          dynamic-body="mass:0.1"
+        ></a-box>
+        <a-box
+          src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+          height="0.5"
+          width="0.5"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="15 121 -7.1"
+          dynamic-body="mass:0.1"
+        ></a-box>
+        <a-box
+          src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+          height="0.5"
+          width="0.5"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="15 121 -7.7"
+          dynamic-body="mass:0.1"
+        ></a-box>
+        <a-box
+          src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+          height="0.5"
+          width="0.5"
+          depth="0.5"
+          rotation="-90 90 0 "
+          position="15 121 -8.3"
+          dynamic-body="mass:0.1"
+        ></a-box>
+        
+        <!--Pushable boxes second layer-->
+        <a-box
+        src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+        height="0.5"
+        width="0.5"
+        depth="0.5"
+        rotation="-90 90 0 "
+        position="15 121.6 -8"
+        dynamic-body="mass:0.1"
+        ></a-box>
+        
+        <a-box
+        src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+        height="0.5"
+        width="0.5"
+        depth="0.5"
+        rotation="-90 90 0 "
+        position="15 121.6 -7.4"
+        dynamic-body="mass:0.1"
+        /></a-box>
+        
+      <a-box
+      src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+      height="0.5"
+      width="0.5"
+      depth="0.5"
+      rotation="-90 90 0 "
+      position="15 121.6 -6.8"
+      dynamic-body="mass:0.1"
+      /></a-box>
+
+      <!--Third row-->
+      <a-box
+      src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+      height="0.5"
+      width="0.5"
+      depth="0.5"
+      rotation="-90 90 0 "
+      position="15 122.2 -7.1"
+      dynamic-body="mass:0.1"
+      weight="0.5"
+       /></a-box>
+
+       <a-box
+      src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+      height="0.5"
+      width="0.5"
+      depth="0.5"
+      rotation="-90 90 0 "
+      position="15 122.2 -7.7"
+      dynamic-body="mass:0.1"
+      weight="0.5"
+       /></a-box>
+        <!-- Final Row-->
+        <a-box
+        src="https://media.istockphoto.com/id/969511574/photo/wooden-crate-cargo-box-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=H_s4yGMI4K1GXSo8b690JJYMTgUsRtwkiYBErMcCdEc="
+        height="0.5"
+        width="0.5"
+        depth="0.5"
+        rotation="-90 90 0 "
+        position="15 122.8 -7.5"
+        dynamic-body="mass:0.1"
+        weight="0.5"
+         /></a-box>
+        <!-- INTORMATION PANELS -->
+        <!-- INFORMATION PANEL: Introduction -->
+        <a-entity
+          id="information_panel"
+          menu=""
+          position="8.80529 122.37359 -9.88777"
+          rotation="-45.00 -20.1 0"
+        >
+          <a-entity
+            text="align: center; color: white; value: Hoi welkom bij de \n hoogtevrees oefenruimte! \n\n Ga de brug over om te beginnen! "
+            scale="0.7 0.7 0.7"
+            position="0.09 0.05 0"
+          >
+          </a-entity>
+          <a-entity
+            geometry="depth: 0.01; height: 0.4; width: 0.6"
+            material="color: #454545"
+            position="0.11222 0.20727 -0.23227"
+          ></a-entity
+        ></a-entity>
+        <!-- END | MENU ENTITY -->
+        <!-- END | HIGHRISE ENTITY -->
+      </a-entity>
+
+      <a-plane
+        src="/assets/Images/GroundPlanePicture.png"
+        rotation=" -90 0 0"
+        height="50"
+        width="50"
+        position="0 1 0"
+      >
+      </a-plane>
     </a-scene>
   </body>
 </html>
